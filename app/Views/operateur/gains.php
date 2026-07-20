@@ -1,7 +1,9 @@
 <?php
 $pageTitle = 'Gains';
 $bodyClass = 'page-operateur';
-$total = (float) ($total_gains['total'] ?? 0);
+$totalInterne = (float) ($total_gains_interne['total'] ?? 0);
+$totalExterne = (float) ($total_gains_externe['total'] ?? 0);
+$total = $totalInterne + $totalExterne;
 $operateurCourant = null;
 foreach ($operateurs as $op) {
     if ((int) $op['id'] === (int) $operateur_id) {
@@ -44,6 +46,18 @@ foreach ($operateurs as $op) {
     <div class="metric-card panel-card">
         <div class="detail-key">Opérateur courant</div>
         <div class="detail-value mt-2"><?= esc($operateurCourant['nom'] ?? '—') ?></div>
+    </div>
+</section>
+
+<section class="soft-grid cols-2 mb-4">
+    <div class="metric-card panel-card">
+        <div class="detail-key">Gains internes (nos clients)</div>
+        <div class="metric-value mt-2"><?= number_format($totalInterne, 0, ',', ' ') ?> Ar</div>
+    </div>
+    <div class="metric-card panel-card">
+        <div class="detail-key">Gains sur transferts vers un autre opérateur</div>
+        <div class="metric-value mt-2"><?= number_format($totalExterne, 0, ',', ' ') ?> Ar</div>
+        <a href="<?= base_url('operateur/montants-a-envoyer') ?>" class="small">Voir les montants à reverser →</a>
     </div>
 </section>
 

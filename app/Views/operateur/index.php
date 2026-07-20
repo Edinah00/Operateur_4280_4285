@@ -14,8 +14,10 @@ $bodyClass = 'page-operateur';
             <div class="d-flex flex-wrap gap-2">
                 <a class="btn btn-light app-btn" href="<?= base_url('operateur/baremes') ?>">Barèmes</a>
                 <a class="btn btn-outline-light app-btn" href="<?= base_url('operateur/prefixes') ?>">Préfixes</a>
+                <a class="btn btn-outline-light app-btn" href="<?= base_url('operateur/autres-operateurs') ?>">Autres opérateurs</a>
                 <a class="btn btn-outline-light app-btn" href="<?= base_url('operateur/comptes') ?>">Comptes</a>
                 <a class="btn btn-outline-light app-btn" href="<?= base_url('operateur/gains') ?>">Gains</a>
+                <a class="btn btn-outline-light app-btn" href="<?= base_url('operateur/montants-a-envoyer') ?>">Montants à envoyer</a>
             </div>
         </div>
     </div>

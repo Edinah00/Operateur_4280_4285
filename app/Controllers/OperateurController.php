@@ -9,6 +9,8 @@ use App\Models\OperateurModel;
 use App\Models\OperateurPrefixeModel;
 use App\Models\PrefixeModel;
 use App\Models\TypeOperationModel;
+use App\Models\AutreOperateurModel;
+use App\Models\AutreOperateurPrefixeModel;
 use Config\Database;
 
 class OperateurController extends BaseController
@@ -191,7 +193,133 @@ class OperateurController extends BaseController
 
         return redirect()->to('/operateur/prefixes')->with('succes', 'Préfixe supprimé.');
     }
-    
+
+////AUTRE OPERATEUR
+    public function autresOperateurs()
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $autreOperateurModel = new AutreOperateurModel();
+        $prefixeModel        = new PrefixeModel();
+        $association         = new AutreOperateurPrefixeModel();
+
+        return view('operateur/autres_operateurs', [
+            'autresOperateurs' => $autreOperateurModel->findAll(),
+            'prefixes'         => $prefixeModel->findAll(),
+            'associations'     => $association->listAvecDetails(),
+        ]);
+    }
+
+    public function ajouterAutreOperateur()
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $prefixe    = trim((string) $this->request->getPost('prefixe'));
+        $nom        = trim((string) $this->request->getPost('nom'));
+        $commission = $this->request->getPost('commission_pourcentage');
+
+        if ($prefixe === '' || $nom === '') {
+            return redirect()->back()->withInput()->with('erreur', 'Le préfixe et le nom sont obligatoires.');
+        }
+
+        if ($commission === null || $commission === '' || (float) $commission < 0) {
+            return redirect()->back()->withInput()->with('erreur', 'Commission invalide.');
+        }
+
+        $db = Database::connect();
+        $db->transStart();
+
+        $prefixeModel = new PrefixeModel();
+        if ($prefixeModel->where('prefixe', $prefixe)->first()) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('erreur', 'Ce préfixe existe déjà (interne ou externe).');
+        }
+
+        $prefixeId = $prefixeModel->insert(['prefixe' => $prefixe], true);
+
+        $autreOperateurModel = new AutreOperateurModel();
+        $operateurId = $this->request->getPost('operateur_id');
+
+        if ($operateurId === 'nouveau' || !$operateurId) {
+            $operateurId = $autreOperateurModel->insert([
+                'nom'                     => $nom,
+                'commission_pourcentage'  => $commission,
+            ], true);
+        } else {
+            $operateurId = (int) $operateurId;
+            if ($autreOperateurModel->find($operateurId) === null) {
+                $db->transRollback();
+                return redirect()->back()->withInput()->with('erreur', 'Opérateur externe invalide.');
+            }
+        }
+
+        if (! $prefixeId || ! $operateurId) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('erreur', "L'ajout a échoué.");
+        }
+
+        (new AutreOperateurPrefixeModel())->insert([
+            'operateur_id' => $operateurId,
+            'prefixe_id'   => $prefixeId,
+        ]);
+
+        $db->transComplete();
+
+        if (! $db->transStatus()) {
+            return redirect()->back()->withInput()->with('erreur', "L'ajout a échoué.");
+        }
+
+        return redirect()->to('/operateur/autres-operateurs')->with('succes', 'Opérateur externe et préfixe enregistrés.');
+    }
+
+    public function supprimerAutreOperateurPrefixe(int $operateurId, int $prefixeId)
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $db = Database::connect();
+        $db->transStart();
+
+        $db->table('autre_operateur_prefixes')
+            ->where('operateur_id', $operateurId)
+            ->where('prefixe_id', $prefixeId)
+            ->delete();
+
+        (new PrefixeModel())->delete($prefixeId);
+
+        $db->transComplete();
+
+        if (! $db->transStatus()) {
+            return redirect()->back()->with('erreur', 'La suppression a échoué.');
+        }
+
+        return redirect()->to('/operateur/autres-operateurs')->with('succes', 'Préfixe externe supprimé.');
+    }
+
+    public function modifierCommission(int $id)
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $commission = $this->request->getPost('commission_pourcentage');
+
+        if ($commission === null || $commission === '' || (float) $commission < 0) {
+            return redirect()->back()->with('erreur', 'Commission invalide.');
+        }
+
+        (new AutreOperateurModel())->update($id, [
+            'commission_pourcentage' => $commission,
+        ]);
+
+        return redirect()->to('/operateur/autres-operateurs')->with('succes', 'Commission mise à jour.');
+    }
+
     public function baremes()
 {
     if ($redirect = $this->requireLogin()) {
@@ -267,24 +395,55 @@ public function ajouterBareme()
     $data['operateurs']   = $operateurModel->findAll();
     $data['operateur_id'] = $operateurId;
 
-    // gains totaux, uniquement retrait + transfert (pas le depot)
-    $data['total_gains'] = $operationModel
+    // gains internes : transferts/retraits vers nos propres clients (autre_operateur_id NULL)
+    $data['total_gains_interne'] = $operationModel
         ->selectSum('frais_applique', 'total')
         ->where('operateur_id', $operateurId)
-        ->whereIn('type_operation_id', [2, 3]) // 2 = retrait, 3 = transfert
+        ->whereIn('type_operation_id', [2, 3])
+        ->where('autre_operateur_id IS NULL')
         ->first();
 
-    // detail par type, pour affichage plus lisible
+    // gains externes : le frais de transfert reste chez nous meme si le destinataire est chez un autre operateur
+    $data['total_gains_externe'] = $operationModel
+        ->selectSum('frais_applique', 'total')
+        ->where('operateur_id', $operateurId)
+        ->whereIn('type_operation_id', [2, 3])
+        ->where('autre_operateur_id IS NOT NULL')
+        ->first();
+
+    // detail par type, uniquement les operations internes (comme en v1)
     $data['gains_par_type'] = $operationModel
         ->select('types_operation.libelle, SUM(operations.frais_applique) as total')
         ->join('types_operation', 'types_operation.id = operations.type_operation_id')
         ->where('operations.operateur_id', $operateurId)
         ->whereIn('operations.type_operation_id', [2, 3])
+        ->where('operations.autre_operateur_id IS NULL')
         ->groupBy('types_operation.libelle')
         ->findAll();
 
     return view('operateur/gains', $data);
 }
+
+    // montants (+ commissions) a reverser a chaque operateur externe suite aux transferts sortants
+    public function montantsAEnvoyer()
+    {
+        if ($redirect = $this->requireLogin()) {
+            return $redirect;
+        }
+
+        $operationModel = new OperationModel();
+
+        $data['lignes'] = $operationModel
+            ->select('autre_operateur.nom, SUM(operations.montant) AS montant_total, SUM(operations.commission_appliquee) AS commission_total, COUNT(*) AS nombre')
+            ->join('autre_operateur', 'autre_operateur.id = operations.autre_operateur_id')
+            ->where('operations.autre_operateur_id IS NOT NULL')
+            ->groupBy('autre_operateur.nom')
+            ->orderBy('autre_operateur.nom')
+            ->findAll();
+
+        return view('operateur/montants_a_envoyer', $data);
+    }
+
     // situation des comptes clients
     public function comptes()
     {

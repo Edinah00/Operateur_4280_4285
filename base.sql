@@ -15,6 +15,7 @@ CREATE TABLE operateur (
 CREATE TABLE autre_operateur (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT NOT NULL,
+    commission_pourcentage REAL NOT NULL DEFAULT 0,
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -87,18 +88,23 @@ CREATE TABLE operations (
 );
 
 -- prefixes valides
-INSERT INTO prefixes_operateur (prefixe) VALUES ('033');
+INSERT INTO prefixes_operateur (prefixe) VALUES ('038');
 INSERT INTO prefixes_operateur (prefixe) VALUES ('034');
 INSERT INTO prefixes_operateur (prefixe) VALUES ('037');
+INSERT INTO prefixes_operateur (prefixe) VALUES ('032');
 
 -- operateurs
-INSERT INTO operateur (nom) VALUES ('Airtel Money');
-INSERT INTO operateur (nom) VALUES ('Orange Money');
+INSERT INTO operateur (nom) VALUES ('Mvola-Yas');
 
 -- associations operateur <-> prefixe
 INSERT INTO operateur_prefixes (operateur_id, prefixe_id) VALUES (1, 1);
 INSERT INTO operateur_prefixes (operateur_id, prefixe_id) VALUES (1, 2);
-INSERT INTO operateur_prefixes (operateur_id, prefixe_id) VALUES (2, 3);
+
+-- autres operateurs
+INSERT INTO autre_operateur (nom, commission_pourcentage) VALUES ('Orange Money', 2.5);
+
+INSERT INTO autre_operateur_prefixes (operateur_id, prefixe_id) VALUES (1, 3);
+INSERT INTO autre_operateur_prefixes (operateur_id, prefixe_id) VALUES (1, 4);
 
 -- types d'operation
 INSERT INTO types_operation (libelle) VALUES ('depot');
@@ -130,8 +136,8 @@ INSERT INTO baremes_frais (operateur_id, type_operation_id, montant_min, montant
 INSERT INTO baremes_frais (operateur_id, type_operation_id, montant_min, montant_max, frais) VALUES (1, 3, 1000001, 2000000, 3000);
 
 -- clients de test
-INSERT INTO clients (nom, numero_telephone) VALUES ('Rakoto', '0331234567');
-INSERT INTO clients (nom, numero_telephone) VALUES ('Rabe', '0377654321');
+INSERT INTO clients (nom, numero_telephone) VALUES ('Rakoto', '0341234567');
+INSERT INTO clients (nom, numero_telephone) VALUES ('Rabe', '0387654321');
 
 -- comptes de test
 INSERT INTO comptes (client_id, solde) VALUES (1, 50000);
@@ -170,3 +176,13 @@ SELECT types_operation.libelle,
 FROM operations
 JOIN types_operation ON types_operation.id = operations.type_operation_id
 GROUP BY types_operation.libelle;
+
+
+
+
+-- ajout sur operations pour tracer les transferts externes
+ALTER TABLE operations ADD COLUMN autre_operateur_id INTEGER REFERENCES autre_operateur(id);
+ALTER TABLE operations ADD COLUMN commission_appliquee REAL DEFAULT 0;
+-- un transfert externe n'a pas de compte local pour le destinataire : on garde son numero
+ALTER TABLE operations ADD COLUMN numero_destinataire_externe TEXT;
+
