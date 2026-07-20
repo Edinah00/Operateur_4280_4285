@@ -10,6 +10,7 @@ use App\Models\OperationModel;
 use App\Models\OperateurModel;
 use App\Models\TypeOperationModel;
 use App\Models\BaremeFraisModel;
+use Config\Database;
 
 class ClientController extends BaseController
 {
@@ -38,11 +39,27 @@ class ClientController extends BaseController
         return null;
     }
 
+    private function getOrCreateCompteForClient(int $clientId): array
+    {
+        $compte = $this->compteModel->getByClientId($clientId);
+
+        if ($compte) {
+            return $compte;
+        }
+
+        $compteId = $this->compteModel->insert([
+            'client_id' => $clientId,
+            'solde'     => 0,
+        ], true);
+
+        return $this->compteModel->find($compteId);
+    }
+
     public function index()
     {
         if ($redirect = $this->requireLogin()) return $redirect;
 
-        $compte = $this->compteModel->getByClientId(session()->get('client_id'));
+        $compte = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
         return view('client/dashboard', ['compte' => $compte]);
     }
 
@@ -85,6 +102,8 @@ class ClientController extends BaseController
             $client = $this->clientModel->find($clientId);
         }
 
+        $this->getOrCreateCompteForClient((int) $client['id']);
+
         session()->set([
             'role'          => 'client',   // ← ajouté
             'client_id'     => $client['id'],
@@ -97,7 +116,7 @@ class ClientController extends BaseController
 
     public function logout()
     {
-        session()->remove(['client_id', 'client_nom', 'client_numero']);
+        session()->remove(['role', 'client_id', 'client_nom', 'client_numero']);
         return redirect()->to('/client/login');
     }
 
@@ -118,8 +137,16 @@ class ClientController extends BaseController
             return redirect()->back()->with('erreur', 'Montant invalide.');
         }
 
-        $compte = $this->compteModel->getByClientId(session()->get('client_id'));
         $typeId = $this->typeOperationModel->getIdByLibelle('depot');
+        $operateurId = $this->operateurModel->getOperateurIdFromNumero((string) session()->get('client_numero'));
+
+        if ($typeId === null || $operateurId === null) {
+            return redirect()->back()->with('erreur', 'Configuration des opérations indisponible.');
+        }
+
+        $db = Database::connect();
+        $db->transStart();
+        $compte = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
 
         $this->compteModel->update($compte['id'], [
             'solde' => $compte['solde'] + $montant,
@@ -128,9 +155,16 @@ class ClientController extends BaseController
         $this->operationModel->insert([
             'compte_id'         => $compte['id'],
             'type_operation_id' => $typeId,
+            'operateur_id'      => $operateurId,
             'montant'           => $montant,
             'frais_applique'    => 0,
         ]);
+
+        $db->transComplete();
+
+        if (! $db->transStatus()) {
+            return redirect()->back()->with('erreur', 'Le dépôt a échoué. Veuillez réessayer.');
+        }
 
         return redirect()->to('/client')->with('succes', 'Dépôt effectué.');
     }
@@ -149,10 +183,14 @@ class ClientController extends BaseController
 
         $montant = (float) $this->request->getPost('montant');
         $numero  = session()->get('client_numero');
-        $compte  = $this->compteModel->getByClientId(session()->get('client_id'));
-
+        $compte  = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
         $operateurId = $this->operateurModel->getOperateurIdFromNumero($numero);
         $typeId      = $this->typeOperationModel->getIdByLibelle('retrait');
+
+        if ($operateurId === null || $typeId === null) {
+            return redirect()->back()->with('erreur', 'Configuration des opérations indisponible.');
+        }
+
         $frais       = $this->baremeFraisModel->getFrais($operateurId, $typeId, $montant);
 
         if ($frais === null) {
@@ -163,6 +201,9 @@ class ClientController extends BaseController
             return redirect()->back()->with('erreur', 'Solde insuffisant (montant + frais).');
         }
 
+        $db = Database::connect();
+        $db->transStart();
+
         $this->compteModel->update($compte['id'], [
             'solde' => $compte['solde'] - ($montant + $frais),
         ]);
@@ -170,9 +211,16 @@ class ClientController extends BaseController
         $this->operationModel->insert([
             'compte_id'         => $compte['id'],
             'type_operation_id' => $typeId,
+            'operateur_id'      => $operateurId,
             'montant'           => $montant,
             'frais_applique'    => $frais,
         ]);
+
+        $db->transComplete();
+
+        if (! $db->transStatus()) {
+            return redirect()->back()->with('erreur', 'Le retrait a échoué. Veuillez réessayer.');
+        }
 
         return redirect()->to('/client')->with('succes', "Retrait effectué (frais: $frais Ar).");
     }
@@ -192,7 +240,13 @@ class ClientController extends BaseController
         $montant    = (float) $this->request->getPost('montant');
         $numeroDest = trim($this->request->getPost('numero_destinataire'));
         $numeroEmet = session()->get('client_numero');
-        $compteEmet = $this->compteModel->getByClientId(session()->get('client_id'));
+        $compteEmet = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
+        $operateurId = $this->operateurModel->getOperateurIdFromNumero($numeroEmet);
+        $typeId      = $this->typeOperationModel->getIdByLibelle('transfert');
+
+        if ($operateurId === null || $typeId === null) {
+            return redirect()->back()->with('erreur', 'Configuration des opérations indisponible.');
+        }
 
         if ($numeroDest === $numeroEmet) {
             return redirect()->back()->with('erreur', 'Impossible de transférer vers soi-même.');
@@ -202,19 +256,6 @@ class ClientController extends BaseController
             return redirect()->back()->with('erreur', 'Numéro destinataire invalide.');
         }
 
-        $clientDest = $this->clientModel->getClientByPhoneNumber($numeroDest);
-        if (!$clientDest) {
-            $destId = $this->clientModel->insert([
-                'nom'              => $numeroDest,
-                'numero_telephone' => $numeroDest,
-            ]);
-            $this->compteModel->insert(['client_id' => $destId, 'solde' => 0]);
-            $clientDest = $this->clientModel->find($destId);
-        }
-        $compteDest = $this->compteModel->getByClientId($clientDest['id']);
-
-        $operateurId = $this->operateurModel->getOperateurIdFromNumero($numeroEmet);
-        $typeId      = $this->typeOperationModel->getIdByLibelle('transfert');
         $frais       = $this->baremeFraisModel->getFrais($operateurId, $typeId, $montant);
 
         if ($frais === null) {
@@ -224,6 +265,27 @@ class ClientController extends BaseController
         if ($compteEmet['solde'] < ($montant + $frais)) {
             return redirect()->back()->with('erreur', 'Solde insuffisant (montant + frais).');
         }
+
+        $db = Database::connect();
+        $db->transStart();
+
+        $clientDest = $this->clientModel->getClientByPhoneNumber($numeroDest);
+        if (! $clientDest) {
+            $destId = $this->clientModel->insert([
+                'nom'              => $numeroDest,
+                'numero_telephone' => $numeroDest,
+            ]);
+
+            if ($destId === false) {
+                $db->transRollback();
+                return redirect()->back()->with('erreur', 'Impossible de créer le destinataire.');
+            }
+
+            $this->compteModel->insert(['client_id' => $destId, 'solde' => 0]);
+            $clientDest = $this->clientModel->find($destId);
+        }
+
+        $compteDest = $this->getOrCreateCompteForClient((int) $clientDest['id']);
 
         $this->compteModel->update($compteEmet['id'], [
             'solde' => $compteEmet['solde'] - ($montant + $frais),
@@ -235,10 +297,17 @@ class ClientController extends BaseController
         $this->operationModel->insert([
             'compte_id'              => $compteEmet['id'],
             'type_operation_id'      => $typeId,
+            'operateur_id'           => $operateurId,
             'montant'                => $montant,
             'frais_applique'         => $frais,
             'compte_destinataire_id' => $compteDest['id'],
         ]);
+
+        $db->transComplete();
+
+        if (! $db->transStatus()) {
+            return redirect()->back()->with('erreur', 'Le transfert a échoué. Veuillez réessayer.');
+        }
 
         return redirect()->to('/client')->with('succes', "Transfert effectué (frais: $frais Ar).");
     }
@@ -249,9 +318,26 @@ class ClientController extends BaseController
     {
         if ($redirect = $this->requireLogin()) return $redirect;
 
-        $compte     = $this->compteModel->getByClientId(session()->get('client_id'));
+        $compte     = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
         $operations = $this->operationModel->historique($compte['id']);
 
         return view('client/historique', ['operations' => $operations]);
+    }
+
+    public function historiqueDetail(int $id)
+    {
+        if ($redirect = $this->requireLogin()) return $redirect;
+
+        $compte = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
+        $operation = $this->operationModel->detailHistorique($id, $compte['id']);
+
+        if (! $operation) {
+            return redirect()->to('/client/historique')->with('erreur', 'Détail introuvable.');
+        }
+
+        return view('client/historique_detail', [
+            'operation' => $operation,
+            'compte'    => $compte,
+        ]);
     }
 }

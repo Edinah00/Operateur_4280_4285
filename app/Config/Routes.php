@@ -7,15 +7,21 @@ use CodeIgniter\Router\RouteCollection;
  */
  
 // page d'accueil
-//$routes->get('/', 'Home::index');
+$routes->get('/', 'ClientController::index');
  
+// authentification operateur
+$routes->get('operateur/login', 'OperateurController::login');
+$routes->get('operateur/logout', 'OperateurController::logout');
+
 // routes operateur
-$routes->group('operateur', ['namespace' => 'App\Controllers'], function ($routes) {
- 
+$routes->group('operateur', ['namespace' => 'App\Controllers', 'filter' => 'role:operateur'], function ($routes) {
+    $routes->get('/', 'OperateurController::index');
+
     // prefixes
     $routes->get('prefixes', 'OperateurController::prefixes');
     $routes->post('prefixes/ajouter', 'OperateurController::ajouterPrefixe');
     $routes->get('prefixes/supprimer/(:num)', 'OperateurController::supprimerPrefixe/$1');
+    $routes->post('prefixes/supprimer/(:num)/(:num)', 'OperateurController::supprimerAssociationPrefixe/$1/$2');
  
     // types d'operation + baremes de frais
     $routes->get('baremes', 'OperateurController::baremes');
@@ -43,4 +49,5 @@ $routes->group('client', ['filter' => 'role:client'], function ($routes) {
     $routes->get('transfert', 'ClientController::transfert');
     $routes->post('transfert', 'ClientController::doTransfert');
     $routes->get('historique', 'ClientController::historique');
+    $routes->get('historique/(:num)', 'ClientController::historiqueDetail/$1');
 });

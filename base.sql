@@ -7,9 +7,18 @@ CREATE TABLE prefixes_operateur (
 -- operateur
 CREATE TABLE operateur (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    prefixe_id INTEGER NOT NULL,
     nom TEXT NOT NULL,
-    FOREIGN KEY (prefixe_id) REFERENCES prefixes_operateur(id)
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- table associative operateur <-> prefixe
+CREATE TABLE operateur_prefixes (
+    operateur_id INTEGER NOT NULL,
+    prefixe_id INTEGER NOT NULL,
+    PRIMARY KEY (operateur_id, prefixe_id),
+    UNIQUE(prefixe_id),
+    FOREIGN KEY (operateur_id) REFERENCES operateur(id) ON DELETE CASCADE,
+    FOREIGN KEY (prefixe_id) REFERENCES prefixes_operateur(id) ON DELETE CASCADE
 );
 
 -- clients
@@ -64,11 +73,17 @@ CREATE TABLE operations (
 
 -- prefixes valides
 INSERT INTO prefixes_operateur (prefixe) VALUES ('033');
+INSERT INTO prefixes_operateur (prefixe) VALUES ('034');
 INSERT INTO prefixes_operateur (prefixe) VALUES ('037');
 
--- operateurs (un par prefixe)
-INSERT INTO operateur (prefixe_id, nom) VALUES (1, 'Airtel Money');
-INSERT INTO operateur (prefixe_id, nom) VALUES (2, 'Orange Money');
+-- operateurs
+INSERT INTO operateur (nom) VALUES ('Airtel Money');
+INSERT INTO operateur (nom) VALUES ('Orange Money');
+
+-- associations operateur <-> prefixe
+INSERT INTO operateur_prefixes (operateur_id, prefixe_id) VALUES (1, 1);
+INSERT INTO operateur_prefixes (operateur_id, prefixe_id) VALUES (1, 2);
+INSERT INTO operateur_prefixes (operateur_id, prefixe_id) VALUES (2, 3);
 
 -- types d'operation
 INSERT INTO types_operation (libelle) VALUES ('depot');

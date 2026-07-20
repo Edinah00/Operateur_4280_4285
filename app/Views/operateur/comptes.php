@@ -1,26 +1,38 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Comptes clients</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="container py-4">
-    <h1>Comptes clients</h1>
+<?php
+$pageTitle = 'Comptes';
+$bodyClass = 'page-operateur';
+?>
+<?= $this->extend('layouts/main') ?>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr><th>Nom</th><th>Telephone</th><th>Solde</th></tr>
-        </thead>
-        <tbody>
-            <?php foreach ($comptes as $c): ?>
-            <tr>
-                <td><?= esc($c['nom']) ?></td>
-                <td><?= esc($c['numero_telephone']) ?></td>
-                <td><?= number_format($c['solde'], 0, ',', ' ') ?> Ar</td>
-            </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-</body>
-</html>
+<?= $this->section('content') ?>
+<section class="page-shell mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+        <div class="hero-kicker">IT-Money</div>
+        <h1 class="h3 mb-1">Comptes</h1>
+    </div>
+    <a href="<?= base_url('operateur') ?>" class="btn btn-outline-light app-btn">Retour</a>
+</section>
+
+<section class="table-card">
+    <div class="table-responsive">
+        <table class="table table-darkish align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Téléphone</th>
+                    <th class="text-end">Solde</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($comptes as $c): ?>
+                    <tr>
+                        <td><?= esc($c['nom']) ?></td>
+                        <td><?= esc($c['numero_telephone']) ?></td>
+                        <td class="text-end"><?= number_format($c['solde'], 0, ',', ' ') ?> Ar</td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+    </div>
+</section>
+<?= $this->endSection() ?>

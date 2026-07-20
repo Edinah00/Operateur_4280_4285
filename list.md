@@ -1,0 +1,6 @@
+Amelioration
+Premièrement, amélioration de login. Dans notre application, actuellement, on a deux roles : client et operateur (vérifiable dans RoleFilter), pour clients , les filters sont bien inséré pour client dans routes, cependant, pour operateur, il n y a pas encore. Veuillez régler cela.
+Deuxièmement, dans login pour clients, apres avoir clické sur se connecter en tant que operateur, puisque c est encore la première version de notre application, allons directement se rediriger vers l index de l operateur (avec creation de session bien sur)
+Troisièmement, conçernant le design de notre application(css + disposition), veuillez le changer complètement (avec des ameliorations) dans tous les views, utiliser un seule fichier style.css serait parfait. Consigne, on peut utiliser bootstrap
+Quatrièmement, vérifier les incohérences dans cahaque opérations faites du client, dans l historique pour les details, il y a un bouton déstiné pour voir details qui va détailler l opération (exemple transfert depuis qui vers qui etc)
+Cinquèmement, vérifier que les transactions sont bien présententes et fonctionnelles

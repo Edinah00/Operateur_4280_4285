@@ -43,3 +43,45 @@ in APPPATH/Views/client/dashboard.php on line 21.
 10 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter()
 11 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
 12 SYSTEMPATH/rewrite.php(44): require_once('/home/aropih/MpiaroS4/M.Rojo/CodeIgniter/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 09:05:34 --> ErrorException: Trying to access array offset on null
+[Method: GET, Route: client]
+in APPPATH/Views/client/dashboard.php on line 21.
+ 1 APPPATH/Views/client/dashboard.php(21): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/View/View.php(240): include('/home/aropih/MpiaroS4/M.Rojo/CodeIgniter/Operateur_4280_4285/app/Views/client/dashboard.php')
+ 3 SYSTEMPATH/View/View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH/Common.php(1250): CodeIgniter\View\View->render()
+ 5 APPPATH/Controllers/ClientController.php(46): view()
+ 6 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\ClientController->index()
+ 7 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController()
+ 8 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest()
+ 9 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter()
+11 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+12 SYSTEMPATH/rewrite.php(44): require_once('/home/aropih/MpiaroS4/M.Rojo/CodeIgniter/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 09:46:57 --> CodeIgniter\Database\Exceptions\DataException: Allowed fields must be specified for model: "App\Models\BaremeFraisModel"
+[Method: POST, Route: operateur/baremes/ajouter]
+in SYSTEMPATH/Model.php on line 678.
+ 1 SYSTEMPATH/Model.php(678): CodeIgniter\Database\Exceptions\DataException::forInvalidAllowedFields()
+ 2 SYSTEMPATH/BaseModel.php(880): CodeIgniter\Model->doProtectFieldsForInsert()
+ 3 SYSTEMPATH/Model.php(668): CodeIgniter\BaseModel->insert()
+ 4 APPPATH/Controllers/OperateurController.php(192): CodeIgniter\Model->insert()
+ 5 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->ajouterBareme()
+ 6 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+11 SYSTEMPATH/rewrite.php(44): require_once('/home/aropih/MpiaroS4/M.Rojo/CodeIgniter/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 09:55:29 --> CodeIgniter\Exceptions\ModelException: "App\Models\OperateurPrefixeModel" model class does not specify a Primary Key.
+[Method: POST, Route: operateur/prefixes/ajouter]
+in SYSTEMPATH/Model.php on line 591.
+ 1 SYSTEMPATH/Model.php(591): CodeIgniter\Exceptions\ModelException::forNoPrimaryKey()
+ 2 SYSTEMPATH/Model.php(751): CodeIgniter\Model->builder()
+ 3 APPPATH/Controllers/OperateurController.php(134): CodeIgniter\Model->__call()
+ 4 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->ajouterPrefixe()
+ 5 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+10 SYSTEMPATH/rewrite.php(44): require_once('/home/aropih/MpiaroS4/M.Rojo/CodeIgniter/Operateur_4280_4285/public/index.php')
