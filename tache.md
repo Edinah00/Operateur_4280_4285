@@ -19,8 +19,9 @@ Livraison V1 : 13h — tag `v1`
   - `clients` (id, nom, numero_telephone, date_creation)
   - `comptes` (id, client_id, solde)
   - `types_operation` (id, libelle : dépôt/retrait/transfert)
-  - `baremes_frais` (id, type_operation_id, montant_min, montant_max, frais)
+   -`operateur` (id, prefixe_id ,nom)
   - `prefixes_operateur` (id, prefixe ex: 033/037)
+  - `baremes_frais` (id,opérateur_id,type_operation_id, montant_min, montant_max, frais)
   - `operations` (id, compte_id, type_operation_id, montant, frais_applique, date, compte_destinataire_id nullable pour transfert)
 - [ ] **Fichier `base.sql` à la racine du projet (obligatoire, 1 seul fichier)**
   - Contient TOUT : `CREATE TABLE` pour les 6 tables, `CREATE VIEW` si besoin, `INSERT` pour les données de départ (préfixes 033/037, barèmes de frais du tableau, 2-3 clients de test)
