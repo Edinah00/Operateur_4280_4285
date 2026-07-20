@@ -1,0 +1,198 @@
+CRITICAL - 2026-07-20 07:15:47 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "operateur/prefixes.php"
+[Method: GET, Route: operateur/prefixes]
+in SYSTEMPATH/Exceptions/FrameworkException.php on line 39.
+ 1 SYSTEMPATH/View/View.php(228): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('operateur/prefixes.php')
+ 2 SYSTEMPATH/Common.php(1250): CodeIgniter\View\View->render('operateur/prefixes', [], true)
+ 3 APPPATH/Controllers/OperateurController.php(20): view('operateur/prefixes', [...])
+ 4 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->prefixes()
+ 5 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 6 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-07-20 07:33:56 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "operateur/prefixes.php"
+[Method: GET, Route: operateur/prefixes]
+in SYSTEMPATH/Exceptions/FrameworkException.php on line 39.
+ 1 SYSTEMPATH/View/View.php(228): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('operateur/prefixes.php')
+ 2 SYSTEMPATH/Common.php(1250): CodeIgniter\View\View->render('operateur/prefixes', [], true)
+ 3 APPPATH/Controllers/OperateurController.php(20): view('operateur/prefixes', [...])
+ 4 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->prefixes()
+ 5 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 6 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 07:38:42 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "operateur/prefixes.php"
+[Method: GET, Route: operateur/prefixes]
+in SYSTEMPATH/Exceptions/FrameworkException.php on line 39.
+ 1 SYSTEMPATH/View/View.php(228): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('operateur/prefixes.php')
+ 2 SYSTEMPATH/Common.php(1250): CodeIgniter\View\View->render('operateur/prefixes', [], true)
+ 3 APPPATH/Controllers/OperateurController.php(20): view('operateur/prefixes', [...])
+ 4 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->prefixes()
+ 5 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 6 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 07:53:22 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 07:53:45 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 07:56:37 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:02:02 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:02:03 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:02:04 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:02:04 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:02:04 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:04:02 --> Error: Class "App\Models\BaremeModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:04:22 --> Error: Class "App\Controllers\BaremeFraisModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:04:45 --> Error: Class "App\Controllers\BaremeFraisModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:06:01 --> Error: Class "App\Controllers\BaremeFraisModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 46.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:17:40 --> Error: Class "App\Controllers\OperateurModel" not found
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Controllers/OperateurController.php on line 43.
+ 1 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 2 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 3 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:20:20 --> ErrorException: Undefined array key "libelle"
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Views/operateur/baremes.php on line 57.
+ 1 APPPATH/Views/operateur/baremes.php(57): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "libelle"', '/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/app/Views/operateur/baremes.php', 57)
+ 2 SYSTEMPATH/View/View.php(240): include('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/app/Views/operateur/baremes.php')
+ 3 SYSTEMPATH/View/View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH/Common.php(1250): CodeIgniter\View\View->render('operateur/baremes', [], true)
+ 5 APPPATH/Controllers/OperateurController.php(53): view('operateur/baremes', [...])
+ 6 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 7 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 8 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
+CRITICAL - 2026-07-20 08:20:21 --> ErrorException: Undefined array key "libelle"
+[Method: GET, Route: operateur/baremes]
+in APPPATH/Views/operateur/baremes.php on line 57.
+ 1 APPPATH/Views/operateur/baremes.php(57): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "libelle"', '/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/app/Views/operateur/baremes.php', 57)
+ 2 SYSTEMPATH/View/View.php(240): include('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/app/Views/operateur/baremes.php')
+ 3 SYSTEMPATH/View/View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH/Common.php(1250): CodeIgniter\View\View->render('operateur/baremes', [], true)
+ 5 APPPATH/Controllers/OperateurController.php(53): view('operateur/baremes', [...])
+ 6 SYSTEMPATH/CodeIgniter.php(951): App\Controllers\OperateurController->baremes()
+ 7 SYSTEMPATH/CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\OperateurController))
+ 8 SYSTEMPATH/CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH/Boot.php(417): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH/Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH/rewrite.php(44): require_once('/home/edinah/Documents/L2/S4/SI/Operateur_4280_4285/public/index.php')
