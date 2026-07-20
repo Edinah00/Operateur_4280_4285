@@ -15,7 +15,26 @@ class OperateurModel extends Model
     protected $returnType    = 'array';
     protected $useTimestamps = false;
 
-    // retrouve l'operateur a partir d'un numero de telephone (via son prefixe)
+    public function getByPrefixeId(int $prefixeId)
+    {
+        return $this->where('prefixe_id', $prefixeId)->first();
+    }
+
+    public function getOperateurIdFromNumero(string $numero): ?int
+    {
+        $prefixe = substr($numero, 0, 3);
+
+        $prefixeModel = new PrefixeOperateurModel();
+        $prefixeRow   = $prefixeModel->getByPrefixe($prefixe);
+
+        if (!$prefixeRow) {
+            return null;
+        }
+
+        $operateur = $this->getByPrefixeId((int) $prefixeRow['id']);
+
+        return $operateur ? (int) $operateur['id'] : null;
+    }
     public function trouverParNumero(string $numero)
     {
         $prefixeSaisi = substr($numero, 0, 3);
