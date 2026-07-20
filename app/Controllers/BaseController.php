@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\RequestInterface;
-u se CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**

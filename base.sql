@@ -51,12 +51,14 @@ CREATE TABLE operations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     compte_id INTEGER NOT NULL,
     type_operation_id INTEGER NOT NULL,
+    operateur_id INTEGER NOT NULL,
     montant REAL NOT NULL,
     frais_applique REAL NOT NULL DEFAULT 0,
     date DATETIME DEFAULT CURRENT_TIMESTAMP,
     compte_destinataire_id INTEGER,
     FOREIGN KEY (compte_id) REFERENCES comptes(id),
     FOREIGN KEY (type_operation_id) REFERENCES types_operation(id),
+    FOREIGN KEY (operateur_id) REFERENCES operateur(id),
     FOREIGN KEY (compte_destinataire_id) REFERENCES comptes(id)
 );
 
