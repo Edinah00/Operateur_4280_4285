@@ -81,57 +81,76 @@ class OperateurController extends BaseController
         ]);
     }
 
-    public function ajouterPrefixe()
-    {
-        if ($redirect = $this->requireLogin()) {
-            return $redirect;
-        }
+public function ajouterPrefixe()
+{
+    if ($redirect = $this->requireLogin()) {
+        return $redirect;
+    }
 
-        $prefixe = trim((string) $this->request->getPost('prefixe'));
-        $operateurId = $this->request->getPost('operateur_id');
-        $nouveauOperateur = trim((string) $this->request->getPost('nouveau_operateur'));
+    $prefixe = trim((string) $this->request->getPost('prefixe'));
+    $operateurId = $this->request->getPost('operateur_id');
+    $nouveauOperateur = trim((string) $this->request->getPost('nouveau_operateur'));
+    $commission = (float) $this->request->getPost('commission') ?: 0;
 
-        if ($prefixe === '') {
-            return redirect()->back()->withInput()->with('erreur', 'Le préfixe est obligatoire.');
-        }
+    if ($prefixe === '') {
+        return redirect()->back()->withInput()->with('erreur', 'Le préfixe est obligatoire.');
+    }
 
-        $db = Database::connect();
-        $db->transStart();
+    $db = Database::connect();
+    $db->transStart();
 
-        $prefixeModel = new PrefixeModel();
-        if ($prefixeModel->where('prefixe', $prefixe)->first()) {
+    // 1. Vérifier si le préfixe existe déjà
+    $prefixeModel = new PrefixeModel();
+    if ($prefixeModel->where('prefixe', $prefixe)->first()) {
+        $db->transRollback();
+        return redirect()->back()->withInput()->with('erreur', 'Ce préfixe existe déjà.');
+    }
+
+    // 2. Créer le préfixe
+    $prefixeId = $prefixeModel->insert(['prefixe' => $prefixe], true);
+
+    if (!$prefixeId) {
+        $db->transRollback();
+        return redirect()->back()->withInput()->with('erreur', 'Impossible de créer le préfixe.');
+    }
+
+    // 3. Gérer l'opérateur
+    if ($operateurId === 'autre') {
+        // Cas "Autre" : créer un nouvel opérateur dans autre_operateur
+        if ($nouveauOperateur === '') {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('erreur', 'Ce préfixe existe déjà.');
+            return redirect()->back()->withInput()->with('erreur', 'Le nom du nouvel opérateur est obligatoire.');
         }
 
-        $prefixeId = $prefixeModel->insert(['prefixe' => $prefixe], true);
+        // Insérer dans la table autre_operateur
+        $autreOperateurModel = new AutreOperateurModel();
+        $autreOperateurId = $autreOperateurModel->insert([
+            'nom' => $nouveauOperateur,
+            'commission_pourcentage' => $commission
+        ], true);
 
-        if (! $prefixeId) {
+        if (!$autreOperateurId) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('erreur', 'Impossible de créer le préfixe.');
+            return redirect()->back()->withInput()->with('erreur', 'Impossible de créer le nouvel opérateur.');
         }
 
+        // 4. Associer le préfixe à cet autre opérateur
+        $db->table('autre_operateur_prefixes')->insert([
+            'operateur_id' => $autreOperateurId,
+            'prefixe_id' => $prefixeId
+        ]);
+
+    } else {
+        // Cas "Opérateur existant" : vérifier qu'il existe dans la table operateur
         $operateurModel = new OperateurModel();
-        if ($operateurId === 'autre') {
-            if ($nouveauOperateur === '') {
-                $db->transRollback();
-                return redirect()->back()->withInput()->with('erreur', 'Le nom du nouvel opérateur est obligatoire.');
-            }
-
-            $operateurId = $operateurModel->insert(['nom' => $nouveauOperateur], true);
-
-            if (! $operateurId) {
-                $db->transRollback();
-                return redirect()->back()->withInput()->with('erreur', 'Impossible de créer le nouvel opérateur.');
-            }
-        } else {
-            if ($operateurModel->find((int) $operateurId) === null) {
-                $db->transRollback();
-                return redirect()->back()->withInput()->with('erreur', 'L’opérateur sélectionné est invalide.');
-            }
-            $operateurId = (int) $operateurId;
+        $operateur = $operateurModel->find((int) $operateurId);
+        
+        if ($operateur === null) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('erreur', 'L\'opérateur sélectionné est invalide.');
         }
 
+        // Vérifier si le préfixe est déjà associé à un opérateur (principal ou autre)
         $dejaLie = $db->table('operateur_prefixes')
             ->where('prefixe_id', $prefixeId)
             ->get()
@@ -142,20 +161,21 @@ class OperateurController extends BaseController
             return redirect()->back()->withInput()->with('erreur', 'Ce préfixe est déjà associé à un opérateur.');
         }
 
-        $association = new OperateurPrefixeModel();
-        $association->insert([
-            'operateur_id' => $operateurId,
-            'prefixe_id'   => $prefixeId,
+        // 4. Associer le préfixe à l'opérateur principal
+        $db->table('operateur_prefixes')->insert([
+            'operateur_id' => (int) $operateurId,
+            'prefixe_id' => $prefixeId
         ]);
-
-        $db->transComplete();
-
-        if (! $db->transStatus()) {
-            return redirect()->back()->withInput()->with('erreur', 'L’ajout du préfixe a échoué.');
-        }
-
-        return redirect()->to('/operateur/prefixes')->with('succes', 'Préfixe et association enregistrés.');
     }
+
+    $db->transComplete();
+
+    if (!$db->transStatus()) {
+        return redirect()->back()->withInput()->with('erreur', 'L\'ajout du préfixe a échoué.');
+    }
+
+    return redirect()->to('/operateur/prefixes')->with('succes', 'Préfixe et association enregistrés.');
+}
 
     public function supprimerPrefixe(int $id)
     {
