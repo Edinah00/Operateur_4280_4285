@@ -50,4 +50,6 @@ $routes->group('client', ['filter' => 'role:client'], function ($routes) {
     $routes->post('transfert', 'ClientController::doTransfert');
     $routes->get('historique', 'ClientController::historique');
     $routes->get('historique/(:num)', 'ClientController::historiqueDetail/$1');
+    $routes->get('transfert-multiple', 'ClientController::transfertMultiple');
+    $routes->post('transfert-multiple', 'ClientController::doTransfertMultiple');
 });

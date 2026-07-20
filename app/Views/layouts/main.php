@@ -13,6 +13,7 @@ if ($role === 'client') {
         ['label' => 'Transfert', 'href' => base_url('client/transfert')],
         ['label' => 'Historique', 'href' => base_url('client/historique')],
         ['label' => 'Déconnexion', 'href' => base_url('client/logout'), 'class' => 'nav-logout'],
+        ['label' => 'Transfert multiple', 'href' => base_url('client/transfert-multiple')],
     ];
 } elseif ($role === 'operateur') {
     $navItems = [

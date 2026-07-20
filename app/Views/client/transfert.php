@@ -14,16 +14,22 @@ $layoutMode = 'auth';
 
         <form action="<?= base_url('client/transfert') ?>" method="post" class="vstack gap-3 mt-4">
             <?= csrf_field() ?>
-            <div>
+            <div class="mb-3">
                 <label class="form-label">Numéro destinataire</label>
-                <input type="text" name="numero_destinataire" class="form-control glass-input" placeholder="0337654321" required>
+                <input type="text" name="numero_destinataire" class="form-control" required>
             </div>
-            <div>
+            <div class="mb-3">
                 <label class="form-label">Montant (Ar)</label>
-                <input type="number" step="1" min="1" name="montant" class="form-control glass-input" required>
+                <input type="number" step="1" min="1" name="montant" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-light app-btn w-100">Valider le transfert</button>
-            <a href="<?= base_url('client') ?>" class="btn btn-outline-light app-btn w-100">Retour au tableau de bord</a>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="frais_retrait_inclus" value="1" class="form-check-input" id="fraisInclus">
+                <label class="form-check-label" for="fraisInclus">
+                    Inclure les frais de retrait (le destinataire pourra retirer sans y penser)
+                </label>
+            </div>
+            <button type="submit" class="btn btn-info w-100">Valider</button>
+            <a href="/client" class="btn btn-link w-100">Retour</a>
         </form>
     </div>
 </div>

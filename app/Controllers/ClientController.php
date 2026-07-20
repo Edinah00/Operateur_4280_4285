@@ -237,81 +237,188 @@ class ClientController extends BaseController
     {
         if ($redirect = $this->requireLogin()) return $redirect;
 
-        $montant    = (float) $this->request->getPost('montant');
-        $numeroDest = trim($this->request->getPost('numero_destinataire'));
-        $numeroEmet = session()->get('client_numero');
-        $compteEmet = $this->getOrCreateCompteForClient((int) session()->get('client_id'));
-        $operateurId = $this->operateurModel->getOperateurIdFromNumero($numeroEmet);
-        $typeId      = $this->typeOperationModel->getIdByLibelle('transfert');
-
-        if ($operateurId === null || $typeId === null) {
-            return redirect()->back()->with('erreur', 'Configuration des opérations indisponible.');
-        }
+        $montant           = (float) $this->request->getPost('montant');
+        $numeroDest        = trim($this->request->getPost('numero_destinataire'));
+        $fraisInclusCoche  = (bool) $this->request->getPost('frais_retrait_inclus'); // null → false
+        $numeroEmet        = session()->get('client_numero');
+        $compteEmet        = $this->compteModel->getByClientId(session()->get('client_id'));
+        $operateurEmetId = $this->operateurModel->getOperateurIdFromNumero($numeroEmet);
 
         if ($numeroDest === $numeroEmet) {
-            return redirect()->back()->with('erreur', 'Impossible de transférer vers soi-même.');
+            return redirect()->back()->withInput()->with('erreur', 'Impossible de transférer vers soi-même.');
         }
 
         if ($this->operateurModel->getOperateurIdFromNumero($numeroDest) === null) {
-            return redirect()->back()->with('erreur', 'Numéro destinataire invalide.');
+            return redirect()->back()->withInput()->with('erreur', 'Numéro destinataire invalide.');
         }
-
-        $frais       = $this->baremeFraisModel->getFrais($operateurId, $typeId, $montant);
-
-        if ($frais === null) {
-            return redirect()->back()->with('erreur', 'Aucun barème trouvé pour ce montant.');
-        }
-
-        if ($compteEmet['solde'] < ($montant + $frais)) {
-            return redirect()->back()->with('erreur', 'Solde insuffisant (montant + frais).');
-        }
-
-        $db = Database::connect();
-        $db->transStart();
 
         $clientDest = $this->clientModel->getClientByPhoneNumber($numeroDest);
-        if (! $clientDest) {
+        if (!$clientDest) {
             $destId = $this->clientModel->insert([
                 'nom'              => $numeroDest,
                 'numero_telephone' => $numeroDest,
             ]);
-
-            if ($destId === false) {
-                $db->transRollback();
-                return redirect()->back()->with('erreur', 'Impossible de créer le destinataire.');
-            }
-
             $this->compteModel->insert(['client_id' => $destId, 'solde' => 0]);
             $clientDest = $this->clientModel->find($destId);
         }
+        $compteDest = $this->compteModel->getByClientId($clientDest['id']);
 
-        $compteDest = $this->getOrCreateCompteForClient((int) $clientDest['id']);
+        $operateurId   = $this->operateurModel->getOperateurIdFromNumero($numeroEmet);
+        $typeTransfert = $this->typeOperationModel->getIdByLibelle('transfert');
+        $typeRetrait   = $this->typeOperationModel->getIdByLibelle('retrait');
+
+        $fraisTransfert = $this->baremeFraisModel->getFrais($operateurId, $typeTransfert, $montant);
+        if ($fraisTransfert === null) {
+            return redirect()->back()->withInput()->with('erreur', 'Aucun barème de transfert trouvé pour ce montant.');
+        }
+
+        // Estimation du frais de retrait que paierait le destinataire, si l'option est cochée
+        $fraisRetraitEstime = 0;
+        if ($fraisInclusCoche) {
+            $fraisRetraitEstime = $this->baremeFraisModel->getFrais($operateurId, $typeRetrait, $montant) ?? 0;
+        }
+
+        $montantRecu        = $montant + $fraisRetraitEstime;
+        $totalDebitEmetteur = $montantRecu + $fraisTransfert;
+
+        if ($compteEmet['solde'] < $totalDebitEmetteur) {
+            return redirect()->back()->withInput()->with('erreur', 'Solde insuffisant (montant + frais).');
+        }
 
         $this->compteModel->update($compteEmet['id'], [
-            'solde' => $compteEmet['solde'] - ($montant + $frais),
+            'solde' => $compteEmet['solde'] - $totalDebitEmetteur,
         ]);
         $this->compteModel->update($compteDest['id'], [
-            'solde' => $compteDest['solde'] + $montant,
+            'solde' => $compteDest['solde'] + $montantRecu,
         ]);
 
         $this->operationModel->insert([
             'compte_id'              => $compteEmet['id'],
-            'type_operation_id'      => $typeId,
-            'operateur_id'           => $operateurId,
-            'montant'                => $montant,
-            'frais_applique'         => $frais,
+            'type_operation_id'      => $typeTransfert,
+            'montant'                => $montantRecu,
+            'frais_applique'         => $fraisTransfert,
             'compte_destinataire_id' => $compteDest['id'],
+            'operateur_id'           => $operateurEmetId,
         ]);
 
-        $db->transComplete();
+        $message = $fraisInclusCoche
+            ? "Transfert effectué. Montant reçu: $montantRecu Ar."
+            : "Transfert effectué. Montant reçu: $montant Ar.";
 
-        if (! $db->transStatus()) {
-            return redirect()->back()->with('erreur', 'Le transfert a échoué. Veuillez réessayer.');
-        }
-
-        return redirect()->to('/client')->with('succes', "Transfert effectué (frais: $frais Ar).");
+        return redirect()->to('/client')->with('succes', $message);
+    }
+    public function transfertMultiple()
+    {
+        if ($redirect = $this->requireLogin()) return $redirect;
+        return view('client/transfert_multiple');
     }
 
+    public function doTransfertMultiple()
+    {
+        if ($redirect = $this->requireLogin()) return $redirect;
+
+        $numeros            = $this->request->getPost('numeros') ?? [];
+        $montantTotal       = (float) $this->request->getPost('montant_total');
+        $fraisInclusCoche   = (bool) $this->request->getPost('frais_retrait_inclus');
+        $numeroEmet         = session()->get('client_numero');
+        $compteEmet         = $this->compteModel->getByClientId(session()->get('client_id'));
+
+        $numeros = array_values(array_filter(array_map('trim', $numeros)));
+
+        if (count($numeros) < 2) {
+            return redirect()->back()->withInput()->with('erreur', 'Indique au moins 2 numéros destinataires.');
+        }
+
+        if (in_array($numeroEmet, $numeros, true)) {
+            return redirect()->back()->withInput()->with('erreur', 'Tu ne peux pas t\'envoyer à toi-même.');
+        }
+
+        $operateurEmetId = $this->operateurModel->getOperateurIdFromNumero($numeroEmet);
+
+        foreach ($numeros as $numero) {
+            $opId = $this->operateurModel->getOperateurIdFromNumero($numero);
+            if ($opId === null || $opId !== $operateurEmetId) {
+                return redirect()->back()->withInput()->with('erreur', "Le numéro $numero n'appartient pas au même opérateur.");
+            }
+        }
+
+        $nombreDest          = count($numeros);
+        $montantParPersonne  = round($montantTotal / $nombreDest, 2);
+        $typeTransfert       = $this->typeOperationModel->getIdByLibelle('transfert');
+        $typeRetrait         = $this->typeOperationModel->getIdByLibelle('retrait');
+
+        // Frais de transfert par personne (obligatoire)
+        $fraisTransfertUnitaire = $this->baremeFraisModel->getFrais($operateurEmetId, $typeTransfert, $montantParPersonne);
+        if ($fraisTransfertUnitaire === null) {
+            return redirect()->back()->withInput()->with('erreur', 'Aucun barème trouvé pour ce montant par personne.');
+        }
+
+        // Frais de retrait estimé par personne, seulement si la case est cochée (même logique que doTransfert())
+        $fraisRetraitUnitaire = 0;
+        if ($fraisInclusCoche) {
+            $fraisRetraitUnitaire = $this->baremeFraisModel->getFrais($operateurEmetId, $typeRetrait, $montantParPersonne) ?? 0;
+        }
+
+        $creditParPersonne    = $montantParPersonne + $fraisRetraitUnitaire;
+        $coutTotalParPersonne = $creditParPersonne + $fraisTransfertUnitaire;
+        $totalDebitEmetteur   = $coutTotalParPersonne * $nombreDest;
+
+        if ($compteEmet['solde'] < $totalDebitEmetteur) {
+            return redirect()->back()->withInput()->with('erreur', 'Solde insuffisant pour couvrir montant + frais total.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            $soldeEmet = $compteEmet['solde'];
+
+            foreach ($numeros as $numero) {
+                $clientDest = $this->clientModel->getClientByPhoneNumber($numero);
+                if (!$clientDest) {
+                    $destId = $this->clientModel->insert([
+                        'nom'              => $numero,
+                        'numero_telephone' => $numero,
+                    ]);
+                    $this->compteModel->insert(['client_id' => $destId, 'solde' => 0]);
+                    $clientDest = $this->clientModel->find($destId);
+                }
+                $compteDest = $this->compteModel->getByClientId($clientDest['id']);
+
+                $soldeEmet -= $coutTotalParPersonne;
+
+                $this->compteModel->update($compteDest['id'], [
+                    'solde' => $compteDest['solde'] + $creditParPersonne,
+                ]);
+
+                $this->operationModel->insert([
+                    'compte_id'              => $compteEmet['id'],
+                    'type_operation_id'      => $typeTransfert,
+                    'montant'                => $creditParPersonne,
+                    'frais_applique'         => $fraisTransfertUnitaire,
+                    'compte_destinataire_id' => $compteDest['id'],
+                    'operateur_id'           => $operateurEmetId,
+                ]);
+            }
+
+            $this->compteModel->update($compteEmet['id'], ['solde' => $soldeEmet]);
+
+            $db->transComplete();
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('erreur', 'Erreur technique, transaction annulée : ' . $e->getMessage());
+        }
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->withInput()->with('erreur', 'Erreur lors de l\'envoi multiple, rien n\'a été appliqué.');
+        }
+
+        $message = $fraisInclusCoche
+            ? "Envoyé $creditParPersonne Ar à $nombreDest destinataires."
+            : "Envoyé $montantParPersonne Ar à $nombreDest destinataires.";
+
+        return redirect()->to('/client')->with('succes', $message);
+    }
     // ---------- Historique ----------
 
     public function historique()
