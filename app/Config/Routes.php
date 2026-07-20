@@ -31,6 +31,11 @@ $routes->group('operateur', ['namespace' => 'App\Controllers', 'filter' => 'role
 
     // situation des gains
     $routes->get('gains', 'OperateurController::gains');
+    $routes->get('montants-a-envoyer', 'OperateurController::montantsAEnvoyer');
+    $routes->get('autres-operateurs', 'OperateurController::autresOperateurs');
+    $routes->post('autres-operateurs/ajouter', 'OperateurController::ajouterAutreOperateur');
+    $routes->post('autres-operateurs/commission/(:num)', 'OperateurController::modifierCommission/$1');
+    $routes->post('autres-operateurs/supprimer/(:num)/(:num)', 'OperateurController::supprimerAutreOperateurPrefixe/$1/$2');
 
     // situation des comptes clients
     $routes->get('comptes', 'OperateurController::comptes');
@@ -50,4 +55,7 @@ $routes->group('client', ['filter' => 'role:client'], function ($routes) {
     $routes->post('transfert', 'ClientController::doTransfert');
     $routes->get('historique', 'ClientController::historique');
     $routes->get('historique/(:num)', 'ClientController::historiqueDetail/$1');
+    $routes->post('transfert/apercu', 'ClientController::apercuTransfert');
+    $routes->get('transfert-multiple', 'ClientController::transfertMultiple');
+    $routes->post('transfert-multiple', 'ClientController::doTransfertMultiple');
 });

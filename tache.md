@@ -97,23 +97,23 @@ Livraison V1 : 13h — tag `v1`
 
 ### Edinah — Côté Opérateur
  
-- [ ] **Configuration des préfixes des autres opérateurs**
+- [ok] **Configuration des préfixes des autres opérateurs**
   - Étendre `prefixes_operateur` ou table dédiée `autres_operateurs` (id, prefixe, nom) — ex: 032, 031
   - Réutiliser le CRUD déjà fait pour les préfixes, en distinguant "mon opérateur" vs "opérateur externe"
-- [ ] **Commission additionnelle sur transferts vers un autre opérateur**
+- [ok] **Commission additionnelle sur transferts vers un autre opérateur**
   - Ajouter un champ `commission_pourcentage` (table `baremes_frais` ou nouvelle table dédiée aux transferts inter-opérateurs)
   - Lors d'un transfert vers un numéro d'un autre préfixe : frais habituel + (montant × commission%)
-- [ ] **Page "Situation des gains" : séparer opérateur / autres opérateurs**
+- [ok] **Page "Situation des gains" : séparer opérateur / autres opérateurs**
   - Adapter la requête `gains()` : `GROUP BY` selon si `compte_destinataire` appartient à ton opérateur ou à un opérateur externe (déduit du préfixe du destinataire)
   - Deux blocs distincts dans la vue : gains internes / gains venant des transferts externes
-- [ ] **Vue "Montants à envoyer à chaque opérateur"**
+- [ok] **Vue "Montants à envoyer à chaque opérateur"**
   - Somme des montants transférés (hors frais/commission) groupés par opérateur externe destinataire — représente ce que ton opérateur doit reverser aux autres opérateurs
 ### Mpiaro — Côté Client
  
-- [ ] **Option "inclure les frais de retrait lors de l'envoi"**
+- [ok] **Option "inclure les frais de retrait lors de l'envoi"**
   - Checkbox/toggle sur le formulaire de transfert
   - Si cochée : le frais est ajouté au montant envoyé au destinataire au lieu d'être déduit du solde de l'émetteur seul (à clarifier avec l'énoncé qui paie quoi exactement)
-- [ ] **Envoi multiple vers plusieurs numéros**
+- [ok] **Envoi multiple vers plusieurs numéros**
   - Formulaire avec liste de numéros destinataires (ajout dynamique de champs, ex: bouton "+ ajouter un numéro")
   - Montant total saisi une fois, divisé équitablement entre le nombre de numéros
   - Une ligne `operations` (avec `compte_destinataire_id`) créée par destinataire, chacune avec sa part du montant + son frais
@@ -121,10 +121,10 @@ Livraison V1 : 13h — tag `v1`
  
 ## Intégration finale V2 (ensemble)
  
-- [ ] Tester un transfert vers un préfixe externe (frais + commission corrects)
-- [ ] Vérifier séparation des gains dans la vue opérateur
-- [ ] Tester l'envoi multiple avec répartition du montant
-- [ ] Créer et pousser le tag `v2` :
+- [ok] Tester un transfert vers un préfixe externe (frais + commission corrects)
+- [ok] Vérifier séparation des gains dans la vue opérateur
+- [ok] Tester l'envoi multiple avec répartition du montant
+- [ok] Créer et pousser le tag `v2` :
   - `git tag v2`
   - `git push origin v2`
  

@@ -16,6 +16,7 @@ $badgeClass = match ($type) {
     'transfert' => 'text-bg-info',
     default     => 'text-bg-secondary',
 };
+$isExternal = ! empty($operation['autre_operateur_id']);
 ?>
 <?= $this->extend('layouts/main') ?>
 
@@ -52,7 +53,7 @@ $badgeClass = match ($type) {
                 </div>
                 <div>
                     <div class="detail-key">Opérateur</div>
-                    <div class="detail-value mt-1">ID #<?= esc($operation['operateur_id']) ?></div>
+                    <div class="detail-value mt-1"><?= esc($isExternal ? ($operation['autre_operateur_nom'] ?? 'Externe') : ('ID #' . $operation['operateur_id'])) ?></div>
                 </div>
             </div>
         </div>
@@ -66,9 +67,20 @@ $badgeClass = match ($type) {
             <?php if ($isTransfer): ?>
                 <div class="mb-3">
                     <div class="detail-key">Destination</div>
-                    <div class="detail-value mt-1"><?= esc($operation['client_nom_dest'] ?? '—') ?></div>
-                    <div class="muted-copy small"><?= esc($operation['client_numero_dest'] ?? '—') ?></div>
+                    <?php if ($isExternal): ?>
+                        <div class="detail-value mt-1"><?= esc($operation['numero_destinataire_externe'] ?? '—') ?></div>
+                        <div class="muted-copy small"><?= esc($operation['autre_operateur_nom'] ?? 'Opérateur externe') ?></div>
+                    <?php else: ?>
+                        <div class="detail-value mt-1"><?= esc($operation['client_nom_dest'] ?? '—') ?></div>
+                        <div class="muted-copy small"><?= esc($operation['client_numero_dest'] ?? '—') ?></div>
+                    <?php endif; ?>
                 </div>
+                <?php if ($isExternal): ?>
+                    <div class="mb-3">
+                        <div class="detail-key">Commission</div>
+                        <div class="detail-value mt-1"><?= number_format((float) ($operation['commission_appliquee'] ?? 0), 0, ',', ' ') ?> Ar</div>
+                    </div>
+                <?php endif; ?>
             <?php else: ?>
                 <div class="mb-3">
                     <div class="detail-key">Destination</div>

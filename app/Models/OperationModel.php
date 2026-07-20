@@ -19,6 +19,9 @@ class OperationModel extends Model
         'montant',
         'frais_applique',
         'compte_destinataire_id',
+        'autre_operateur_id',
+        'commission_appliquee',
+        'numero_destinataire_externe',
     ];
 
     protected $useTimestamps = true;
@@ -29,12 +32,13 @@ class OperationModel extends Model
     public function historique(int $compteId)
     {
         return $this->db->table('operations')
-            ->select('operations.*, types_operation.libelle AS type_libelle, compte_source.client_id AS client_id_source, client_source.nom AS client_nom_source, client_source.numero_telephone AS client_numero_source, compte_dest.client_id AS client_id_dest, client_dest.nom AS client_nom_dest, client_dest.numero_telephone AS client_numero_dest')
+            ->select('operations.*, types_operation.libelle AS type_libelle, compte_source.client_id AS client_id_source, client_source.nom AS client_nom_source, client_source.numero_telephone AS client_numero_source, compte_dest.client_id AS client_id_dest, client_dest.nom AS client_nom_dest, client_dest.numero_telephone AS client_numero_dest, autre_operateur.nom AS autre_operateur_nom')
             ->join('types_operation', 'types_operation.id = operations.type_operation_id')
             ->join('comptes AS compte_source', 'compte_source.id = operations.compte_id')
             ->join('clients AS client_source', 'client_source.id = compte_source.client_id')
             ->join('comptes AS compte_dest', 'compte_dest.id = operations.compte_destinataire_id', 'left')
             ->join('clients AS client_dest', 'client_dest.id = compte_dest.client_id', 'left')
+            ->join('autre_operateur', 'autre_operateur.id = operations.autre_operateur_id', 'left')
             ->where('operations.compte_id', $compteId)
             ->orderBy('operations.date', 'DESC')
             ->get()
@@ -44,12 +48,13 @@ class OperationModel extends Model
     public function detailHistorique(int $operationId, int $compteId): ?array
     {
         return $this->db->table('operations')
-            ->select('operations.*, types_operation.libelle AS type_libelle, compte_source.client_id AS client_id_source, client_source.nom AS client_nom_source, client_source.numero_telephone AS client_numero_source, compte_dest.client_id AS client_id_dest, client_dest.nom AS client_nom_dest, client_dest.numero_telephone AS client_numero_dest')
+            ->select('operations.*, types_operation.libelle AS type_libelle, compte_source.client_id AS client_id_source, client_source.nom AS client_nom_source, client_source.numero_telephone AS client_numero_source, compte_dest.client_id AS client_id_dest, client_dest.nom AS client_nom_dest, client_dest.numero_telephone AS client_numero_dest, autre_operateur.nom AS autre_operateur_nom')
             ->join('types_operation', 'types_operation.id = operations.type_operation_id')
             ->join('comptes AS compte_source', 'compte_source.id = operations.compte_id')
             ->join('clients AS client_source', 'client_source.id = compte_source.client_id')
             ->join('comptes AS compte_dest', 'compte_dest.id = operations.compte_destinataire_id', 'left')
             ->join('clients AS client_dest', 'client_dest.id = compte_dest.client_id', 'left')
+            ->join('autre_operateur', 'autre_operateur.id = operations.autre_operateur_id', 'left')
             ->where('operations.id', $operationId)
             ->where('operations.compte_id', $compteId)
             ->get()

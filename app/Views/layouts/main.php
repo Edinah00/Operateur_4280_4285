@@ -1,5 +1,5 @@
 <?php
-$pageTitle  = $pageTitle ?? 'Operateur 4280';
+$pageTitle  = $pageTitle ?? 'IT-Money';
 $bodyClass  = trim(($bodyClass ?? '') . ' app-body');
 $layoutMode = $layoutMode ?? 'app';
 $role       = session()->get('role');
@@ -11,6 +11,7 @@ if ($role === 'client') {
         ['label' => 'Dépôt', 'href' => base_url('client/depot')],
         ['label' => 'Retrait', 'href' => base_url('client/retrait')],
         ['label' => 'Transfert', 'href' => base_url('client/transfert')],
+        ['label' => 'Transfert multiple', 'href' => base_url('client/transfert-multiple')],
         ['label' => 'Historique', 'href' => base_url('client/historique')],
         ['label' => 'Déconnexion', 'href' => base_url('client/logout'), 'class' => 'nav-logout'],
     ];
@@ -19,6 +20,8 @@ if ($role === 'client') {
         ['label' => 'Accueil', 'href' => base_url('operateur')],
         ['label' => 'Barèmes', 'href' => base_url('operateur/baremes')],
         ['label' => 'Préfixes', 'href' => base_url('operateur/prefixes')],
+        ['label' => 'Autres opérateurs', 'href' => base_url('operateur/autres-operateurs')],
+        ['label' => 'Montants à envoyer', 'href' => base_url('operateur/montants-a-envoyer')],
         ['label' => 'Comptes', 'href' => base_url('operateur/comptes')],
         ['label' => 'Gains', 'href' => base_url('operateur/gains')],
         ['label' => 'Déconnexion', 'href' => base_url('operateur/logout'), 'class' => 'nav-logout'],

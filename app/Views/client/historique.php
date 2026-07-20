@@ -54,7 +54,7 @@ $bodyClass = 'page-client';
                             <td class="text-end"><?= $signe ?><?= number_format($op['montant'], 0, ',', ' ') ?> Ar</td>
                             <td class="text-end"><?= number_format($op['frais_applique'], 0, ',', ' ') ?> Ar</td>
                             <td class="text-end">
-                                <a href="<?= base_url('client/historique/' . $op['id']) ?>" class="btn btn-sm btn-outline-light">Détail</a>
+                                <a href="<?= base_url('client/historique/' . $op['id']) ?>" class="btn btn-sm btn-detail-history">Détail</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
