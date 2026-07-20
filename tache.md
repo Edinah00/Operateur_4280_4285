@@ -94,7 +94,7 @@ Livraison V1 : 13h — tag `v1`
   ---
  
 ## Version 2
- 
+
 ### Edinah — Côté Opérateur
  
 - [ ] **Configuration des préfixes des autres opérateurs**

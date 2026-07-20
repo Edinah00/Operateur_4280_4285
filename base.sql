@@ -11,6 +11,13 @@ CREATE TABLE operateur (
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- autre operateur
+CREATE TABLE autre_operateur (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT NOT NULL,
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- table associative operateur <-> prefixe
 CREATE TABLE operateur_prefixes (
     operateur_id INTEGER NOT NULL,
@@ -20,7 +27,15 @@ CREATE TABLE operateur_prefixes (
     FOREIGN KEY (operateur_id) REFERENCES operateur(id) ON DELETE CASCADE,
     FOREIGN KEY (prefixe_id) REFERENCES prefixes_operateur(id) ON DELETE CASCADE
 );
-
+-- table associative autre_operateur <-> prefixe
+CREATE TABLE autre_operateur_prefixes (
+    operateur_id INTEGER NOT NULL,
+    prefixe_id INTEGER NOT NULL,
+    PRIMARY KEY (operateur_id, prefixe_id),
+    UNIQUE(prefixe_id),
+    FOREIGN KEY (operateur_id) REFERENCES autre_operateur(id) ON DELETE CASCADE,
+    FOREIGN KEY (prefixe_id) REFERENCES prefixes_operateur(id) ON DELETE CASCADE
+);
 -- clients
 CREATE TABLE clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

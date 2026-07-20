@@ -8,7 +8,7 @@ use CodeIgniter\Router\RouteCollection;
  
 // page d'accueil
 $routes->get('/', 'ClientController::index');
- 
+
 // authentification operateur
 $routes->get('operateur/login', 'OperateurController::login');
 $routes->get('operateur/logout', 'OperateurController::logout');
@@ -28,14 +28,14 @@ $routes->group('operateur', ['namespace' => 'App\Controllers', 'filter' => 'role
     $routes->post('baremes/ajouter', 'OperateurController::ajouterBareme');
     $routes->get('baremes/supprimer/(:num)', 'OperateurController::supprimerBareme/$1');
     $routes->post('baremes/modifier/(:num)', 'OperateurController::modifierBareme/$1');
- 
+
     // situation des gains
     $routes->get('gains', 'OperateurController::gains');
- 
+
     // situation des comptes clients
     $routes->get('comptes', 'OperateurController::comptes');
 });
- 
+
 $routes->get('client/login', 'ClientController::showLoginForm');
 $routes->post('client/login', 'ClientController::login');
 $routes->get('client/logout', 'ClientController::logout');
