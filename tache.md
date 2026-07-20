@@ -8,14 +8,14 @@ Livraison V1 : 13h — tag `v1`
 
 ## Base commune (à faire ensemble, en premier)
 
-- [ ] **Init projet CodeIgniter 4**
+- [ok] **Init projet CodeIgniter 4**
   - Config `.env` : `database.default.DBDriver = SQLite3`, chemin du fichier `.db`
   - Vérifier que le serveur démarre (`php spark serve`)
-- [ ] **Dépôt Git public**
+- [ok] **Dépôt Git public**
   - Créer le repo, README avec le lien du formulaire
   - Branche `main` réservée à la version finale, travailler sur `dev`
-- [ ] **Remplir le formulaire Google en tout début de projet**
-- [ ] **Schéma de base de données**
+- [ok] **Remplir le formulaire Google en tout début de projet**
+- [ok] **Schéma de base de données**
   - `clients` (id, nom, numero_telephone, date_creation)
   - `comptes` (id, client_id, solde)
   - `types_operation` (id, libelle : dépôt/retrait/transfert)
@@ -23,7 +23,7 @@ Livraison V1 : 13h — tag `v1`
   - `prefixes_operateur` (id, prefixe ex: 033/037)
   - `baremes_frais` (id,opérateur_id,type_operation_id, montant_min, montant_max, frais)
   - `operations` (id, compte_id, type_operation_id, montant, frais_applique, date, compte_destinataire_id nullable pour transfert)
-- [ ] **Fichier `base.sql` à la racine du projet (obligatoire, 1 seul fichier)**
+- [ok] **Fichier `base.sql` à la racine du projet (obligatoire, 1 seul fichier)**
   - Contient TOUT : `CREATE TABLE` pour les 6 tables, `CREATE VIEW` si besoin, `INSERT` pour les données de départ (préfixes 033/037, barèmes de frais du tableau, 2-3 clients de test)
   - Placé à la racine bdu repo, à côté du dossier `app/` — pas dans `app/Database/`
   - Charger ce fichier dans la base SQLite au démarrage (script d'init ou commande manuelle `sqlite3 base.db < base.sql`)
@@ -32,22 +32,22 @@ Livraison V1 : 13h — tag `v1`
 
 ## Edinah — Côté Opérateur
 
-- [ ] **Configuration des préfixes valables**
+- [ok] **Configuration des préfixes valables**
   - Modèle `PrefixeModel` + table `prefixes_operateur`
   - Contrôleur `OperateurController::prefixes()` : formulaire CRUD (ajouter/supprimer un préfixe)
   - Vue `operateur/prefixes.php` avec table Bootstrap + form d'ajout
-- [ ] **Types d'opérations + barèmes de frais**
+- [ok] **Types d'opérations + barèmes de frais**
   - Modèle `TypeOperationModel`, `BaremeModel`
   - CRUD des tranches (montant_min, montant_max, frais) par type d'opération
   - Vue avec table éditable (form inline ou modal Bootstrap) reproduisant le tableau de l'énoncé
   - Validation : pas de chevauchement de tranches
-- [ ] **Vue "Situation des gains"**
+- [ok] **Vue "Situation des gains"**
   - Requête agrégée : somme des `frais_applique` sur `operations` filtrées par type = retrait/transfert
   - Affichage total + éventuellement par période (jour/tout)
-- [ ] **Vue "Situation des comptes clients"**
+- [ok] **Vue "Situation des comptes clients"**
   - Liste des clients avec leur solde courant
   - Recherche/filtre par numéro de téléphone
-- [ ] **Layout/dashboard admin**
+- [ok] **Layout/dashboard admin**
   - Template Bootstrap commun (sidebar ou navbar) pour toutes les vues opérateur
   - Menu : Préfixes / Types & Barèmes / Gains / Comptes clients
 
@@ -55,26 +55,26 @@ Livraison V1 : 13h — tag `v1`
 
 ## Mpiaro — Côté Client
 
-- [ ] **Login automatique par numéro de téléphone**
+- [ok] **Login automatique par numéro de téléphone**
   - Contrôleur `ClientController::login()` : formulaire avec juste le numéro
   - Vérifier le préfixe (doit correspondre à un `prefixes_operateur` valide)
   - Si le numéro n'existe pas en base → création automatique du client + compte (solde 0), pas de formulaire d'inscription séparé
   - Stocker le client connecté en session
-- [ ] **Vue solde du compte**
+- [ok] **Vue solde du compte**
   - Page d'accueil client après login : affichage du solde courant
-- [ ] **Dépôt automatique**
+- [ok] **Dépôt automatique**
   - Formulaire montant → création directe d'une `operation` type "dépôt", solde += montant
   - Pas de frais sur le dépôt (à confirmer selon barème)
-- [ ] **Retrait automatique**
+- [ok] **Retrait automatique**
   - Formulaire montant → calcul du frais selon la tranche correspondante (`baremes_frais`)
   - Vérifier solde suffisant (montant + frais)
   - solde -= (montant + frais), enregistrer l'opération avec le frais appliqué
-- [ ] **Transfert entre comptes**
+- [ok] **Transfert entre comptes**
   - Formulaire montant + numéro destinataire
   - Vérifier que le destinataire existe (ou le créer si logique similaire au dépôt)
   - Appliquer le barème de frais transfert, débiter l'émetteur, créditer le destinataire
   - Enregistrer une opération avec `compte_destinataire_id`
-- [ ] **Historique des opérations**
+- [ok] **Historique des opérations**
   - Liste chronologique des opérations du client connecté (type, montant, frais, date)
   - Table Bootstrap, tri par date décroissante
 
@@ -82,11 +82,49 @@ Livraison V1 : 13h — tag `v1`
 
 ## Intégration finale _ v1(ensemble)
 
-- [ ] Vérifier que les frais définis côté opérateur s'appliquent correctement côté client
-- [ ] Tests bout en bout : login → dépôt → transfert → retrait → historique
-- [ ] Vérifier la vue "Situation des gains" après une série d'opérations de test
-- [ ] Nettoyage code + commentaires courts
-- [ ] Créer et pousser le tag `v1` :
+- [ok] Vérifier que les frais définis côté opérateur s'appliquent correctement côté client
+- [ok] Tests bout en bout : login → dépôt → transfert → retrait → historique
+- [ok] Vérifier la vue "Situation des gains" après une série d'opérations de test
+- [ok] Nettoyage code + commentaires courts
+- [ok] Créer et pousser le tag `v1` :
   - `git tag v1`
   - `git push origin v1`
   - (fait après avoir mergé/mis la version finale sur `main`)
+  
+  ---
+ 
+## Version 2
+ 
+### Edinah — Côté Opérateur
+ 
+- [ ] **Configuration des préfixes des autres opérateurs**
+  - Étendre `prefixes_operateur` ou table dédiée `autres_operateurs` (id, prefixe, nom) — ex: 032, 031
+  - Réutiliser le CRUD déjà fait pour les préfixes, en distinguant "mon opérateur" vs "opérateur externe"
+- [ ] **Commission additionnelle sur transferts vers un autre opérateur**
+  - Ajouter un champ `commission_pourcentage` (table `baremes_frais` ou nouvelle table dédiée aux transferts inter-opérateurs)
+  - Lors d'un transfert vers un numéro d'un autre préfixe : frais habituel + (montant × commission%)
+- [ ] **Page "Situation des gains" : séparer opérateur / autres opérateurs**
+  - Adapter la requête `gains()` : `GROUP BY` selon si `compte_destinataire` appartient à ton opérateur ou à un opérateur externe (déduit du préfixe du destinataire)
+  - Deux blocs distincts dans la vue : gains internes / gains venant des transferts externes
+- [ ] **Vue "Montants à envoyer à chaque opérateur"**
+  - Somme des montants transférés (hors frais/commission) groupés par opérateur externe destinataire — représente ce que ton opérateur doit reverser aux autres opérateurs
+### Mpiaro — Côté Client
+ 
+- [ ] **Option "inclure les frais de retrait lors de l'envoi"**
+  - Checkbox/toggle sur le formulaire de transfert
+  - Si cochée : le frais est ajouté au montant envoyé au destinataire au lieu d'être déduit du solde de l'émetteur seul (à clarifier avec l'énoncé qui paie quoi exactement)
+- [ ] **Envoi multiple vers plusieurs numéros**
+  - Formulaire avec liste de numéros destinataires (ajout dynamique de champs, ex: bouton "+ ajouter un numéro")
+  - Montant total saisi une fois, divisé équitablement entre le nombre de numéros
+  - Une ligne `operations` (avec `compte_destinataire_id`) créée par destinataire, chacune avec sa part du montant + son frais
+---
+ 
+## Intégration finale V2 (ensemble)
+ 
+- [ ] Tester un transfert vers un préfixe externe (frais + commission corrects)
+- [ ] Vérifier séparation des gains dans la vue opérateur
+- [ ] Tester l'envoi multiple avec répartition du montant
+- [ ] Créer et pousser le tag `v2` :
+  - `git tag v2`
+  - `git push origin v2`
+ 
