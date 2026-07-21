@@ -130,6 +130,14 @@ Livraison V1 : 13h — tag `v1`
  
 ## Aléa 4280 - Promotion transfert
 - [ok]  Creation table Promotion_transfert 
-- []  Ajout donnée test
+- [ok]  Ajout donnée test
 - [ok]  Creation Model Promotion 
-- []  Application dans ClientController
+- [ok]  Application dans ClientController
+
+## Aléa 4285 - Notion Epargne (lors d un transfert vers mon compte)
+- [OK]  Creation table Compte_epargne
+- [OK]  Création CompteEpargneModel
+- [OK]  Création page pour insertion pourcentage Compte_epargne
+- [ ]  Solde actuel encore à faire
+- [OK]  Enregistrement de Compte_epargne pour session client_id
+- [ ]  Modification dans ClientController conçernant doTransfert()

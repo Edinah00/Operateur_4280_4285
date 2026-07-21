@@ -12,7 +12,7 @@ use App\Models\OperateurModel;
 use App\Models\PrefixeOperateurModel;
 use App\Models\TypeOperationModel;
 use App\Models\BaremeFraisModel;
-use App\Models\PromotionModel;
+use App\Models\CompteEpargneModel;
 use Config\Database;
 
 class ClientController extends BaseController
@@ -23,7 +23,7 @@ class ClientController extends BaseController
     protected $operateurModel;
     protected $typeOperationModel;
     protected $baremeFraisModel;
-    protected $promotionModel;
+    protected $compteEpargneModel;
 
     public function __construct()
     {
@@ -33,7 +33,7 @@ class ClientController extends BaseController
         $this->operateurModel     = new OperateurModel();
         $this->typeOperationModel = new TypeOperationModel();
         $this->baremeFraisModel   = new BaremeFraisModel();
-        $this->promotionModel     = new PromotionModel();
+        $this->compteEpargneModel   = new CompteEpargneModel();
     }
 
     private function requireLogin()
@@ -58,7 +58,23 @@ class ClientController extends BaseController
         ], true);
 
         return $this->compteModel->find($compteId);
-    }
+    } 
+    // private function getOrCreateCompteEpargneForClient(int $clientId): array
+    // {
+    //     $compte = $this->compteEpargneModel->getByClientId($clientId);
+
+    //     if ($compte) {
+    //         return $compte;
+    //     }
+
+    //     $this->compteEpargneModel->insert([
+    //                 'client_id'              => session()->get('client_id'),
+    //                 'solde' => 0,
+    //                 'pourcentage' => 1,
+    //             ],true);
+
+    //     return $this->compteModel->find($compteId);
+    // }
 
     private function getOperateurDepuisNumero(string $numero): ?array
     {
@@ -99,7 +115,7 @@ class ClientController extends BaseController
         $operateurDest   = $this->getOperateurDepuisNumero($numeroDest);
         $typeTransfert   = $this->typeOperationModel->getIdByLibelle('transfert');
         $typeRetrait     = $this->typeOperationModel->getIdByLibelle('retrait');
-        $promotion       = $this->promotionModel->get('promotion_pourcentage');
+
         if ($numeroDest === $numeroEmet) {
             return redirect()->back()->withInput()->with('erreur', 'Impossible de transférer vers soi-même.');
         }
@@ -123,8 +139,8 @@ class ClientController extends BaseController
         if ($fraisInclusCoche && $estMemeOperateur) {
             $fraisRetraitEstime = $this->baremeFraisModel->getFrais($operateurEmetId, $typeRetrait, $montant) ?? 0;
         }
-        $fraisPromu = ($fraisRetraitEstime * $promotion)/100;
-        $montantRecu = $montant +  $fraisPromu;
+
+        $montantRecu = $montant + $fraisRetraitEstime;
         $commissionAppliquee = 0.0;
         $autreOperateurId = null;
         $numeroDestinataireExterne = null;
@@ -135,7 +151,7 @@ class ClientController extends BaseController
             $montantRecu = $montant;
             $numeroDestinataireExterne = $numeroDest;
         }
-        
+
         $totalDebitEmetteur = $montantRecu + $fraisTransfert + $commissionAppliquee;
 
         if ($compteEmet['solde'] < $totalDebitEmetteur) {
@@ -160,7 +176,6 @@ class ClientController extends BaseController
             'numero_destinataire_externe'=> $numeroDestinataireExterne,
             'total_debit_emetteur'       => $totalDebitEmetteur,
             'est_meme_operateur'         => $estMemeOperateur,
-            'promotion'                  => $promotion,
         ];
     }
 
@@ -342,6 +357,16 @@ class ClientController extends BaseController
         return view('client/transfert');
     }
 
+    public function insertionCompteEpargne()
+    {
+        if ($redirect = $this->requireLogin()) return $redirect;
+        $compteEp        = $this->compteModel->getByClientId(session()->get('client_id'));
+
+        return view('client/insertionCompteEpargne', $compteEp);
+    }
+
+    
+
     public function apercuTransfert()
     {
         if ($redirect = $this->requireLogin()) return $redirect;
@@ -356,6 +381,29 @@ class ClientController extends BaseController
         }
 
         return view('client/transfert_preview', $preview);
+    }
+    public function doInsertionCompteEpargne()
+    {
+        if ($redirect = $this->requireLogin()) return $redirect;
+        $pourcentage    = (float) $this->request->getPost('pourcentage');
+        // Detecter compte existant
+        $compte        = $this->compteModel->getByClientId(session()->get('client_id'));
+        // Creaation du compte si non 
+        if (!$compte) {
+            $this->compteEpargneModel->insert([
+                    'client_id'              => session()->get('client_id'),
+                    'solde' => 0,
+                    'pourcentage' => $pourcentage,
+                ]);
+        }
+        else {
+            $this->compteEpargneModel->update($compte['id'], [
+            'pourcentage' => $pourcentage,
+            ]);
+        }
+        // Enregistrer dans base
+
+        return view('client/insertionCompteEpargne');
     }
 
     public function doTransfert()
@@ -380,7 +428,6 @@ class ClientController extends BaseController
 
         $compteDest = null;
         if ($transfert['operateur_dest']['type'] === 'operateur') {
-           // $promotion = $this->$promotionModel
             $clientDest = $this->clientModel->getClientByPhoneNumber($numeroDest);
             if (! $clientDest) {
                 $destId = $this->clientModel->insert([
@@ -403,12 +450,22 @@ class ClientController extends BaseController
                 $db->transRollback();
                 return redirect()->back()->withInput()->with('erreur', 'Compte destinataire introuvable.');
             }
+            // Trouver ou creer le compte Epargne 
+            $compteEp = $this->compteEpargneModel->getByClientId($clientDest['id']);
 
+            if (!$compteEp) {
+                return redirect()->back()->withInput()->with('erreur', 'Compte Epargne destinataire introuvable.');
+            }
+            $soldeEpargne = round($transfert['montant_recu'] * ((float) $compteEp['pourcentage'] / 100), 2);
+            $montant_recu = $transfert['montant_recu'] - $soldeEpargne;
             $this->compteModel->update($compteDest['id'], [
-                'solde' => $compteDest['solde'] + $transfert['montant_recu'],
+                'solde' => $compteDest['solde'] + $montant_recu,
+            ]);
+            $this->compteEpargneModel->update($compteEp['id'], [
+                'solde' => $compteEp['solde'] + $soldeEpargne,
             ]);
         }
-
+        
         $this->operationModel->insert([
             'compte_id'              => $transfert['compte_emet']['id'],
             'type_operation_id'      => $transfert['type_transfert_id'],

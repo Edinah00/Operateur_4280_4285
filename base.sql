@@ -53,6 +53,15 @@ CREATE TABLE comptes (
     FOREIGN KEY (client_id) REFERENCES clients(id)
 );
 
+-- comptes_epargne
+CREATE TABLE comptes_epargne (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id INTEGER NOT NULL,
+    solde REAL NOT NULL DEFAULT 0,
+    pourcentage REAL NOT NULL DEFAULT 0,
+    FOREIGN KEY (client_id) REFERENCES clients(id)
+);
+
 -- types_operation
 CREATE TABLE types_operation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

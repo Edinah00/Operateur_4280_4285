@@ -53,6 +53,8 @@ $routes->group('client', ['filter' => 'role:client'], function ($routes) {
     $routes->post('retrait', 'ClientController::doRetrait');
     $routes->get('transfert', 'ClientController::transfert');
     $routes->post('transfert', 'ClientController::doTransfert');
+    $routes->get('insertionCompteEpargne', 'ClientController::insertionCompteEpargne');
+    $routes->post('insertionCompteEpargne', 'ClientController::doInsertionCompteEpargne');
     $routes->get('historique', 'ClientController::historique');
     $routes->get('historique/(:num)', 'ClientController::historiqueDetail/$1');
     $routes->post('transfert/apercu', 'ClientController::apercuTransfert');

@@ -13,6 +13,7 @@ if ($role === 'client') {
         ['label' => 'Transfert', 'href' => base_url('client/transfert')],
         ['label' => 'Transfert multiple', 'href' => base_url('client/transfert-multiple')],
         ['label' => 'Historique', 'href' => base_url('client/historique')],
+        ['label' => 'Compte Epargne', 'href' => base_url('client/insertionCompteEpargne')],
         ['label' => 'Déconnexion', 'href' => base_url('client/logout'), 'class' => 'nav-logout'],
     ];
 } elseif ($role === 'operateur') {
