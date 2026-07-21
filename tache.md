@@ -128,3 +128,8 @@ Livraison V1 : 13h — tag `v1`
   - `git tag v2`
   - `git push origin v2`
  
+## Aléa 4280 - Promotion transfert
+- [ok]  Creation table Promotion_transfert 
+- []  Ajout donnée test
+- [ok]  Creation Model Promotion 
+- []  Application dans ClientController

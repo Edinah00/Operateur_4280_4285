@@ -12,6 +12,7 @@ use App\Models\OperateurModel;
 use App\Models\PrefixeOperateurModel;
 use App\Models\TypeOperationModel;
 use App\Models\BaremeFraisModel;
+use App\Models\PromotionModel;
 use Config\Database;
 
 class ClientController extends BaseController
@@ -22,6 +23,7 @@ class ClientController extends BaseController
     protected $operateurModel;
     protected $typeOperationModel;
     protected $baremeFraisModel;
+    protected $promotionModel;
 
     public function __construct()
     {
@@ -31,6 +33,7 @@ class ClientController extends BaseController
         $this->operateurModel     = new OperateurModel();
         $this->typeOperationModel = new TypeOperationModel();
         $this->baremeFraisModel   = new BaremeFraisModel();
+        $this->promotionModel     = new PromotionModel();
     }
 
     private function requireLogin()
@@ -96,7 +99,7 @@ class ClientController extends BaseController
         $operateurDest   = $this->getOperateurDepuisNumero($numeroDest);
         $typeTransfert   = $this->typeOperationModel->getIdByLibelle('transfert');
         $typeRetrait     = $this->typeOperationModel->getIdByLibelle('retrait');
-
+        $promotion       = $this->promotionModel->get('promotion_pourcentage');
         if ($numeroDest === $numeroEmet) {
             return redirect()->back()->withInput()->with('erreur', 'Impossible de transférer vers soi-même.');
         }
@@ -120,8 +123,8 @@ class ClientController extends BaseController
         if ($fraisInclusCoche && $estMemeOperateur) {
             $fraisRetraitEstime = $this->baremeFraisModel->getFrais($operateurEmetId, $typeRetrait, $montant) ?? 0;
         }
-
-        $montantRecu = $montant + $fraisRetraitEstime;
+        $fraisPromu = ($fraisRetraitEstime * $promotion)/100;
+        $montantRecu = $montant +  $fraisPromu;
         $commissionAppliquee = 0.0;
         $autreOperateurId = null;
         $numeroDestinataireExterne = null;
@@ -132,7 +135,7 @@ class ClientController extends BaseController
             $montantRecu = $montant;
             $numeroDestinataireExterne = $numeroDest;
         }
-
+        
         $totalDebitEmetteur = $montantRecu + $fraisTransfert + $commissionAppliquee;
 
         if ($compteEmet['solde'] < $totalDebitEmetteur) {
@@ -157,6 +160,7 @@ class ClientController extends BaseController
             'numero_destinataire_externe'=> $numeroDestinataireExterne,
             'total_debit_emetteur'       => $totalDebitEmetteur,
             'est_meme_operateur'         => $estMemeOperateur,
+            'promotion'                  => $promotion,
         ];
     }
 
@@ -376,6 +380,7 @@ class ClientController extends BaseController
 
         $compteDest = null;
         if ($transfert['operateur_dest']['type'] === 'operateur') {
+           // $promotion = $this->$promotionModel
             $clientDest = $this->clientModel->getClientByPhoneNumber($numeroDest);
             if (! $clientDest) {
                 $destId = $this->clientModel->insert([

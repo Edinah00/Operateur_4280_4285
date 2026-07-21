@@ -70,7 +70,16 @@ CREATE TABLE baremes_frais (
     FOREIGN KEY (operateur_id) REFERENCES operateur(id),
     FOREIGN KEY (type_operation_id) REFERENCES types_operation(id)
 );
+-- Promotion_transfert 
+CREATE TABLE promotion(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type_operation_id INTEGER NOT NULL,
+    promotion_pourcentage REAL NOT NULL DEFAULT 0,
+    FOREIGN KEY (type_operation_id) REFERENCES types_operation(id)
 
+);
+
+INSERT INTO promotion(type_operation_id ,promotion_pourcentage) VALUES (3,0.1);
 -- operations (historique)
 CREATE TABLE operations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
